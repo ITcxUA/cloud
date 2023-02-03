@@ -1,11 +1,53 @@
+
+echo -e "${YELLOW}default phpMyAdmin path /phpMyAdmin...${NC}"
+
+PHPMYADMIN=$(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed")
+  if [ ${PHPMYADMIN} -eq 0 ]; then echo -e "${YELLOW}Installing phpmyadmin${NC}" && apt-get install phpmyadmin --yes;
+    elif [ ${PHPMYADMIN} -eq 1 ]; then echo -e "${GREEN}phpmyadmin is installed!${NC}"
+  fi;
+  
+# apt-get install fail2ban  --yes;
+# apt-get install apache2 php5  --yes;
+# apt-get install php5-curl --yes;
+# apt-get install mysql-server --yes;
+
+
+PHPVersion=""
+if [ -f "$Root_Path/server/php/52/bin/php" ];then
+	PHPVersion="52"
+fi
+if [ -f "$Root_Path/server/php/53/bin/php" ];then
+	PHPVersion="53"
+fi
+if [ -f "$Root_Path/server/php/54/bin/php" ];then
+	PHPVersion="54"
+fi
+if [ -f "$Root_Path/server/php/55/bin/php" ];then
+	PHPVersion="55"
+fi
+if [ -f "$Root_Path/server/php/56/bin/php" ];then
+	PHPVersion="56"
+fi
+if [ -f "$Root_Path/server/php/70/bin/php" ];then
+	PHPVersion="70"
+fi
+if [ -f "$Root_Path/server/php/71/bin/php" ];then
+	PHPVersion="71"
+fi
+if [ -f "$Root_Path/server/php/72/bin/php" ];then
+	PHPVersion="72"
+fi
+
+
+
 #========================================================================
 #            phpMyAdmin default NGINX configuration
 #========================================================================
 
 
 #sudo nano /etc/nginx/sites-enabled/default
+PHPVersion='7.2m'
 
-PHPVER='php7.2-fpm'
 cat >>/etc/nginx/nginx.conf<< EOL
 # phpMyAdmin default NGINX configuration
 location /phpmyadmin {
@@ -14,7 +56,7 @@ location /phpmyadmin {
 	   location ~ ^/phpmyadmin/(.+\.php)$ {
 			   try_files $uri =404;
 			   root /usr/share/;
-			   fastcgi_pass unix:/run/php/${PHPVER}.sock;
+			   fastcgi_pass unix:/run/php/php${PHPVersion}-fpm.sock;
 			   fastcgi_index index.php;
 			   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 			   include /etc/nginx/fastcgi_params;
@@ -35,7 +77,7 @@ sudo systemctl restart nginx
 #            phpMyAdmin default Apache configuration
 #========================================================================
 #   phpmyadmin default path
-echo -e "${YELLOW}default phpMyAdmin path /phpMyAdmin...${NC}"
+
 APACHE_CONF='/etc/phpmyadmin/apache.conf'
 cat >>${APACHE_CONF}<< EOL
 # phpMyAdmin default Apache configuration
